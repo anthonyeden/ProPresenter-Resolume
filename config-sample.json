@@ -1,0 +1,11 @@
+{
+    "ProP_IPAddress": "127.0.0.1",
+    "ProP_IPPort": 60119,
+    "ProP_Password": "password",
+
+    "Resolume_IPAddress": "127.0.0.1",
+    "Resolume_IPPort": 7000,
+    "Resolume_TextBoxOSCPaths": [
+        "/composition/layers/1/clips/1/videotrack/effects/textblock/effect/text"
+    ]
+}
