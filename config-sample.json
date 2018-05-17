@@ -7,5 +7,27 @@
     "Resolume_IPPort": 7000,
     "Resolume_TextBoxOSCPaths": [
         "/composition/layers/1/clips/1/videotrack/effects/textblock/effect/text"
+    ],
+
+    "TextMatchTriggers": [
+        {
+            "Text": "Heaven thundered",
+            "Commands": [
+                ["/composition/layers/1/clips/1/connect"]
+            ]
+        },
+        {
+            "Text": "Unstoppable God",
+            "Commands": [
+                ["/composition/layers/2/clips/4/video/source/params/scale", 0.04],
+                ["/composition/layers/2/clips/4/video/source/params/text", "UNSTOPPABLE GOD"],
+                ["/composition/layers/2/clips/4/connect"]
+            ],
+            "CommandReleased": [
+                ["/composition/layers/2/clear"],
+                ["/composition/layers/1/clips/1/connect"]
+            ]
+        }
+
     ]
 }

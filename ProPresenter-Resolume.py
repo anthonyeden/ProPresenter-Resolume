@@ -28,6 +28,9 @@ class ProPResolume():
     Resolume_IPAddress = None
     Resolume_IPPort = None
     Resolume_TextBoxOSCPaths = []
+    Resolume_TextMatches = []
+
+    NextRelease = None
 
     # Do we need to attempt a reconnection?
     tryReconnect = False
@@ -60,6 +63,9 @@ class ProPResolume():
             self.Resolume_IPAddress = ConfigData['Resolume_IPAddress']
             self.Resolume_IPPort = int(ConfigData['Resolume_IPPort'])
             self.Resolume_TextBoxOSCPaths = ConfigData['Resolume_TextBoxOSCPaths']
+
+            if 'TextMatchTriggers' in ConfigData:
+                self.Resolume_TextMatches = ConfigData['TextMatchTriggers']
 
         except Exception as e:
             print()
@@ -129,6 +135,38 @@ class ProPResolume():
 
         for path in self.Resolume_TextBoxOSCPaths:
             self.Resolume.send_message(path, text)
+        
+        foundMatch = False
+
+        for match in self.Resolume_TextMatches:
+            if match['Text'] in text:
+                print(text)
+                foundMatch = True
+                for command in match['Commands']:
+
+                    if len(command) > 1:
+                        args = command[1:]
+                    else:
+                        args = [True]
+
+                    print(command)
+                    self.Resolume.send_message(command[0], *args)
+
+                if 'CommandReleased' in match:
+                    self.NextRelease = match['CommandReleased']
+                
+                break
+        
+        if foundMatch is False and self.NextRelease is not None:
+            for command in self.NextRelease:
+                if len(command) > 1:
+                    args = command[1:]
+                else:
+                    args = [True]
+                
+                print(command)
+                self.Resolume.send_message(command[0], *args)
+            
 
     def close(self):
         # Terminate the application
