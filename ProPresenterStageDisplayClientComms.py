@@ -108,6 +108,9 @@ class ProPresenterStageDisplayClientComms(threading.Thread):
                     self.sock.close()
                     self.doCallback("Disconnected", e)
                     return False
+            
+            except Exception as e:
+                print("Exception receiving data", e)
 
             else:
                 # Check if we're in a data block

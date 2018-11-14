@@ -29,6 +29,8 @@ class ProPResolume():
     Resolume_IPPort = None
     Resolume_TextBoxOSCPaths = []
     Resolume_TextMatches = []
+    Resolume_TextBoxStartOSCPaths = []
+    Resolume_TextBoxReleaseOSCPaths = []
     
     # Allow splitting the text at a certain delimiter
     splitLinesChar = None
@@ -69,6 +71,12 @@ class ProPResolume():
 
             if 'TextMatchTriggers' in ConfigData:
                 self.Resolume_TextMatches = ConfigData['TextMatchTriggers']
+                
+            if 'Resolume_TextBoxReleaseOSCPaths' in ConfigData:
+                self.Resolume_TextBoxReleaseOSCPaths = ConfigData['Resolume_TextBoxReleaseOSCPaths']
+            
+            if 'Resolume_TextBoxStartOSCPaths' in ConfigData:
+                self.Resolume_TextBoxStartOSCPaths = ConfigData['Resolume_TextBoxStartOSCPaths']
             
             if "SplitLines" in ConfigData:
                 self.splitLinesChar = ConfigData['SplitLines']
@@ -150,6 +158,15 @@ class ProPResolume():
         if text == "":
             text = " "
 
+            for path in self.Resolume_TextBoxReleaseOSCPaths:
+                # Allow releasing the clip when it's not in use (to trigger a fade out)
+                self.Resolume.send_message(path, 1)
+
+        else:
+            for path in self.Resolume_TextBoxStartOSCPaths:
+                # Allow starting the clip when it's in use
+                self.Resolume.send_message(path, 1)
+
         for path in self.Resolume_TextBoxOSCPaths:
             try:
                 print("Sending text:", text)
@@ -191,6 +208,8 @@ class ProPResolume():
                 
                 print(command)
                 self.Resolume.send_message(command[0], *args)
+            
+            self.NextRelease = None
             
 
     def close(self):
