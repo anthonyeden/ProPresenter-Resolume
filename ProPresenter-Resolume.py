@@ -36,6 +36,8 @@ class ProPResolume():
     splitLinesChar = None
 
     NextRelease = None
+    
+    lastText = ""
 
     # Do we need to attempt a reconnection?
     tryReconnect = False
@@ -162,11 +164,13 @@ class ProPResolume():
                 # Allow releasing the clip when it's not in use (to trigger a fade out)
                 self.Resolume.send_message(path, 1)
 
-        else:
+        elif text != self.lastText:
             for path in self.Resolume_TextBoxStartOSCPaths:
                 # Allow starting the clip when it's in use
                 self.Resolume.send_message(path, 1)
-
+        
+        self.lastText = text
+        
         for path in self.Resolume_TextBoxOSCPaths:
             try:
                 print("Sending text:", text)
