@@ -92,7 +92,7 @@ class ProPresenterStageDisplayClientComms(threading.Thread):
 
         while True:
             try:
-                thisData = self.sock.recv(1024).decode()
+                thisData = self.sock.recv(1024).decode('utf-8')
 
                 if thisData == "":
                     # Connection closed
@@ -116,6 +116,7 @@ class ProPresenterStageDisplayClientComms(threading.Thread):
 
                 # Check if the datablock is over
                 if "</StageDisplayData>" in totalData[-25:]:
+                    #print totalData
                     return totalData
             
                 if self._stop is True:
@@ -128,9 +129,9 @@ class ProPresenterStageDisplayClientComms(threading.Thread):
         
         try:
             tree = ET.fromstring(recvData)
-        except:
+        except Exception as e:
             # This is an unexpected data type. Ignore it for now...
-            pass
+            print("EXCEPTION with XML Parsing:", e)
         else:
         
             for fields in tree.findall('Fields'):

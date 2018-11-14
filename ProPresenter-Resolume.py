@@ -29,6 +29,9 @@ class ProPResolume():
     Resolume_IPPort = None
     Resolume_TextBoxOSCPaths = []
     Resolume_TextMatches = []
+    
+    # Allow splitting the text at a certain delimiter
+    splitLinesChar = None
 
     NextRelease = None
 
@@ -66,6 +69,9 @@ class ProPResolume():
 
             if 'TextMatchTriggers' in ConfigData:
                 self.Resolume_TextMatches = ConfigData['TextMatchTriggers']
+            
+            if "SplitLines" in ConfigData:
+                self.splitLinesChar = ConfigData['SplitLines']
 
         except Exception as e:
             print()
@@ -124,6 +130,11 @@ class ProPResolume():
 
     def updateSlideTextCurrent(self, data):
         # Update the text label for the current slide
+        
+        if self.splitLinesChar is not None and data['text'] is not None and self.splitLinesChar in data['text']:
+            data['text'] = data['text'].split(self.splitLinesChar)
+            data['text'] = data['text'][0]
+        
         if data['text'] is not None:
             self.resolumeSendText(data['text'].encode('utf-8'))
         else:
@@ -132,15 +143,25 @@ class ProPResolume():
     def resolumeSendText(self, text):
         if type(text) is bytes:
             text = text.decode().strip(' \t\r\n\0')
+        
+        text = text.strip()
+        text = text.replace('\x00', ' ')
+        
+        if text == "":
+            text = " "
 
         for path in self.Resolume_TextBoxOSCPaths:
-            self.Resolume.send_message(path, text)
+            try:
+                print("Sending text:", text)
+                self.Resolume.send_message(path, text)
+            except Exception as e:
+                print("EXCEPTION while sending text!", e)
         
         foundMatch = False
 
         for match in self.Resolume_TextMatches:
             if match['Text'] in text:
-                print(text)
+                print("Matched text", text)
                 foundMatch = True
                 for command in match['Commands']:
 
@@ -150,7 +171,11 @@ class ProPResolume():
                         args = [True]
 
                     print(command)
-                    self.Resolume.send_message(command[0], *args)
+
+                    try:
+                        self.Resolume.send_message(command[0], *args)
+                    except Exception as e:
+                        print("EXCEPTION while doing text triggers!", e)
 
                 if 'CommandReleased' in match:
                     self.NextRelease = match['CommandReleased']
